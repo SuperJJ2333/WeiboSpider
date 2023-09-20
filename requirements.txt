@@ -1,0 +1,4 @@
+Scrapy~=2.10.1
+python_dateutil
+PyMySQL~=1.1.0
+python-dateutil~=2.8.2
