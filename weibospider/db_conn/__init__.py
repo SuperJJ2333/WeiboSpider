@@ -81,26 +81,36 @@ class db_conn:
         cursor = conn_type.cursor()
         try:
             # 判断是否有多个数据项需要插入
-            if isinstance(values_args, tuple) or isinstance(values_args, list) and len(values_args) > 1:
-                # 使用 executemany() 方法批量插入数据
+            if isinstance(values_args, tuple) and len(values_args) == 1:
                 cursor.execute(self.sql, values_args)
+            elif isinstance(values_args, list) and len(values_args) > 1:
+                # 使用 executemany() 方法批量插入数据
+                cursor.executemany(self.sql, values_args)
             else:
                 # 使用 execute() 方法插入单个数据项
-                cursor.execute(self.sql)
+                cursor.execute(self.sql, values_args)
             # 提交事务
             conn_type.commit()
             # 设置写入状态为“完成”
             self.write_status = 'finished'
-            print("写入成功！")
         except Exception as e:
             # 写入失败，回滚事务
             conn_type.rollback()
             # 设置写入状态，并包含异常信息
-            print(F"写入失败：{e}")
-            self.write_status = F'failed: {str(e)}'
+            # 识别重复键异常（MySQL的错误代码是1062）
+            if '1062' in str(e):
+                print(f"写入失败：字段重复。详细信息：{e}")
+                self.write_status = f'failed: Duplicate entry {str(e)}'
+            else:
+                # 设置写入状态，并包含异常信息
+                print(f"写入失败：{e}")
+                print(f"详细信息：{values_args}")
+                self.write_status = f'failed: {str(e)}'
         finally:
             # 关闭游标
             cursor.close()
+            if self.write_status == 'finished':
+                print("已成功写入！！！")
 
     def employment_mysql_query(self):
         """

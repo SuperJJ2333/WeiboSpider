@@ -5,7 +5,10 @@ from sql.insert_sql import insert_user, insert_weibo
 
 # 1. 读取数据
 items = []
-with open("../../output/tweet_spider_by_keyword_20230920152852.jsonl", "r", encoding="utf-8") as f:
+# 创建空列表，用于存储用户和微博数据
+user_values_list = []
+weibo_values_list = []
+with open("../../output/tweet_spider_by_keyword_20230922142904.jsonl", "r", encoding="utf-8") as f:
     for line in f:
         items.append(json.loads(line))
 
@@ -45,6 +48,14 @@ for item in items:
         comments_count, attitudes_count, source, content, pic_urls,
         pic_num, isLongText, url, keyword, crawl_time, user_id)
 
+    # 将提取的数据追加到列表中
+    user_values_list.append(user_values_args)
+    weibo_values_list.append(weibo_values_args)
+
     insert_user(user_values_args)
     insert_weibo(weibo_values_args)
+
+# # 执行批量插入
+# insert_user(user_values_list)
+# insert_weibo(weibo_values_list)
 

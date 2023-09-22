@@ -23,12 +23,13 @@ class TweetSpiderByKeyword(Spider):
         爬虫入口
         """
         # 这里keywords可替换成实际待采集的数据
-        keywords = ["找工作", "兼职", "灵活用工", "打零工", "赚钱", "大学生就业", "中年人就业", "青年就业"]
+        # keywords = ["找工作", "兼职", "灵活用工", "打零工", "赚钱", "大学生就业", "中年人就业", "青年就业"]
+        keywords = ["青年就业"]
         # 这里的时间可替换成实际需要的时间段
-        start_time = datetime.datetime(year=2020, month=1, day=1, hour=0)
+        start_time = datetime.datetime(year=2020, month=7, day=14, hour=0)
         end_time = datetime.datetime(year=2023, month=9, day=1, hour=23)
         # 是否按照小时进行切分，数据量更大; 对于非热门关键词**不需要**按照小时切分
-        is_split_by_hour = False
+        is_split_by_hour = True
         for keyword in keywords:
             if not is_split_by_hour:
                 _start_time = start_time.strftime("%Y-%m-%d-%H")
@@ -39,10 +40,10 @@ class TweetSpiderByKeyword(Spider):
                 time_cur = start_time
                 while time_cur < end_time:
                     _start_time = time_cur.strftime("%Y-%m-%d-%H")
-                    _end_time = (time_cur + datetime.timedelta(hours=1)).strftime("%Y-%m-%d-%H")
+                    _end_time = (time_cur + datetime.timedelta(hours=24)).strftime("%Y-%m-%d-%H")
                     url = f"https://s.weibo.com/weibo?q={keyword}&timescope=custom%3A{_start_time}%3A{_end_time}&page=1"
                     yield Request(url, callback=self.parse, meta={'keyword': keyword})
-                    time_cur = time_cur + datetime.timedelta(hours=1)
+                    time_cur = time_cur + datetime.timedelta(hours=24)
 
     def parse(self, response, **kwargs):
         """

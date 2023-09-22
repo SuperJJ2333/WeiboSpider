@@ -1,4 +1,5 @@
 # encoding: utf-8
+import logging
 
 
 class IPProxyMiddleware(object):
@@ -18,18 +19,17 @@ class IPProxyMiddleware(object):
                                                                         "proxy": ':'.join(self._proxy)}
         request.headers["Connection"] = "close"
 
+        # logging.info(f'Using proxy: {request.meta["proxy"]}')
         return None
 
     def process_exception(self, request, exception, spider):
         """捕获407和302异常"""
-        if "'status': 407" in exception.__str__() or "'status': 302" in exception.__str__():
+        if "'status': 407" in exception.__str__():
             from scrapy.resolver import dnscache
             dnscache.__delitem__(self._proxy[0])
 
             # 使用新的代理尝试该请求
             # 你可以更新self._proxy为新的代理地址
             # 再次尝试原始请求
-            return request.copy()
-
-        # 对于其他异常，我们返回None，这样其他中间件可以处理它
-        return None
+            logging.debug(f'status: 407: {exception}')
+            return exception

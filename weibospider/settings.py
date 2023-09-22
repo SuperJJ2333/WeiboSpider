@@ -26,8 +26,15 @@ DOWNLOADER_MIDDLEWARES = {
 }
 
 ITEM_PIPELINES = {
-    'pipelines.MySqlWriterPipeline': 300,
+    'pipelines.MySqlWriterPipeline': None,
     'pipelines.JsonWriterPipeline': 301,
 }
 
-LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'DEBUG'
+# 断点续爬
+JOBDIR = '../jobdir'
+
+HTTPCACHE_ENABLED = True
+
+SCHEDULER_DISK_QUEUE = 'scrapy.squeues.PickleLifoDiskQueue'
+SCHEDULER_MEMORY_QUEUE = 'scrapy.squeues.LifoMemoryQueue'

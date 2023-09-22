@@ -51,6 +51,8 @@ class MySqlWriterPipeline(object):
         mblogid = item['mblogid']
         created_at = item['created_at']
         geo = item['geo']
+        if geo:
+            geo = json.dumps(geo)
         ip_location = item['ip_location']
         reposts_count = item['reposts_count']
         comments_count = item['comments_count']
